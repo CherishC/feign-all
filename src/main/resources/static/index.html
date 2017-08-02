@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cheirsh测试项目</title>
+</head>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/ajax.js"></script>
+<script>
+    function getProducts() {
+        var getProductUrl = "/product/list";
+        $.getJSON(getProductUrl, function (result) {
+            if (result.success) {
+                var products = result.data;
+                var html = "";
+                $.each(products, function (index, product) {
+
+                    html += '<tr name="'+product.id+'">' +
+                        '<td>'+product.name+'</td>' +
+                        '<td>'+product.price+'</td>' +
+                        '<td>'+product.quantity+'</td>' +
+                        '<td><input type="number" placeholder="下单数量"/><button class="btn_order">确定下单</button></td></tr>';
+
+                });
+                $("#tBody").empty();
+                $("#tBody").append(html);
+            }else {
+                alert(result.message);
+            }
+        });
+    }
+
+    function getOrders() {
+        var getOrdersUrl = "/order/my";
+        $.getJSON(getOrdersUrl, function (result) {
+            if (result.success) {
+                var orders = result.data;
+                var html = "";
+                $.each(orders, function (index, order) {
+
+                    html += '<tr>' +
+                        '<td>'+order.orderSn+'</td>' +
+                        '<td>'+order.productId+'</td>' +
+                        '<td>'+order.quantity+'</td>' +
+                        '<td>'+order.fee+'</td>' +
+                        '<td>'+order.status+'</td>' +
+                        '<td>'+order.createdTime+'</td>';
+
+                });
+                $("#orderBody").empty();
+                $("#orderBody").append(html);
+            }else {
+                alert(result.message);
+            }
+        });
+    }
+    $(function () {
+        getProducts();
+
+        $("table").on("click", ".btn_order", function () {
+            var productId = $(this).parents("tr").attr("name");
+            var num = $(this).prev().val();
+
+            if (productId == null) {
+                alert("数据出错");
+                return;
+            }
+            if (num == null) {
+                alert("请填写下单数量");
+                return;
+            }
+
+            var url ="/product/order";
+            var data ="productId=" + productId + "&num="+  num;
+            var result = postForm(url, data);
+            if (result.success){
+                alert(result.message);
+                getProducts();
+                getOrders();
+            }else {
+                alert(result.message);
+            }
+        });
+    });
+</script>
+<body>
+
+    <h1 style="text-align: center">Cheirsh测试项目，用户、商品、订单三系统分布式项目</h1>
+    <div style="width:600px;margin: 0 auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>商品名称</th>
+                    <th>价格</th>
+                    <th>剩余数量</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tBody">
+                <!--<tr><td>商品名称</td><td>价格</td><td>剩余数量</td><td>操作</td></tr>-->
+            </tbody>
+        </table>
+    </div>
+
+    <hr/><hr/><hr/>
+
+    <div style="width:800px;margin: 0 auto;">
+        <h2>我的订单</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>订单号</th>
+                <th>商品ID</th>
+                <th>数量</th>
+                <th>费用</th>
+                <th>状态</th>
+                <th>下单时间</th>
+            </tr>
+            </thead>
+            <tbody id="orderBody">
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

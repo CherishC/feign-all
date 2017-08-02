@@ -1,0 +1,37 @@
+feign:
+  hystrix:
+    enabled: false
+
+eureka:
+  instance:
+      hostname: 119.23.30.142
+  client:
+    serviceUrl:
+      defaultZone: http://119.23.30.142:8761/eureka/
+
+server:
+  port: 80
+
+spring:
+  application:
+    name: feign-all
+  profiles:
+    active: dev
+  #===== redis settings =====#
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    pool:
+      max-active: 50
+  #===== session store-type =====#
+  session:
+    store-type: redis
+
+
+securityconfig:
+  logoutsuccssurl: /
+  permitall: /rest/**,/bbs**
+  deniedpage: /deny
+  urlroles: /**/new/** = user;
+            /**/edit/** = user;
+            /**/delete/** = user
